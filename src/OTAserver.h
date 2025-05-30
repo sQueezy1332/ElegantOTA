@@ -41,15 +41,16 @@ namespace ota {
 		OTA_Mode mode = OTA_MODE_FIRMWARE; // Get header x-ota-mode value, if present
 		// Get mode from arg
 		if (request->hasParam("mode")) {
-			if (request->getParam("mode")->value() == "fs") {
+			const String& str = request->getParam("mode")->value();
+			if (str == "fs") {
 				mode = OTA_MODE_FILESYSTEM;
 			}
 			else { mode = OTA_MODE_FIRMWARE; }
-			log_v("OTA Mode: %u", mode);
+			log_v("OTA Mode: %u", str.c_str());
 		}
 		// Get file MD5 hash from arg
 		if (request->hasParam("hash")) {
-			String hash = request->getParam("hash")->value();
+			const String& hash = request->getParam("hash")->value();
 			log_v("MD5: %s", hash.c_str());
 			if (!Update.setMD5(hash.c_str())) {
 				printError(request);
