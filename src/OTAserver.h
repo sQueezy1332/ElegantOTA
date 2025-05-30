@@ -50,7 +50,7 @@ namespace ota {
 				mode = OTA_MODE_FILESYSTEM;
 			}
 			else { mode = OTA_MODE_FIRMWARE; }
-			log_v("OTA Mode: %u", str.c_str());
+			log_v("OTA Mode: %s", str.c_str());
 		}
 		// Get file MD5 hash from arg
 		if (request->hasParam("hash")) {
