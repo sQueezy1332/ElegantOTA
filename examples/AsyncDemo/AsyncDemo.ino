@@ -30,49 +30,23 @@
   Upgrade to ElegantOTA Pro: https://elegantota.pro
 */
 
-#if defined(ESP8266)
-  #include <ESP8266WiFi.h>
-  #include <ESPAsyncTCP.h>
-#elif defined(ESP32)
-  #include <WiFi.h>
-  #include <AsyncTCP.h>
-#elif defined(TARGET_RP2040) || defined(TARGET_RP2350) || defined(PICO_RP2040) || defined(PICO_RP2350)
-  #include <WiFi.h>
-  #include <RPAsyncTCP.h>
-#endif
-
 #include <ESPAsyncWebServer.h>
-#include <ElegantOTA.h>
+#include "OTAserver.h"
 
 const char* ssid = "........";
 const char* password = "........";
 
 AsyncWebServer server(80);
 
-unsigned long ota_progress_millis = 0;
+unsigned long ota_timestamp = 0;
 
-void onOTAStart() {
-  // Log when OTA has started
-  Serial.println("OTA update started!");
-  // <Add your own code here>
-}
-
-void onOTAProgress(size_t current, size_t final) {
+void ota_progress(size_t progress, size_t size) {
   // Log every 1 second
-  if (millis() - ota_progress_millis > 1000) {
-    ota_progress_millis = millis();
-    Serial.printf("OTA Progress Current: %u bytes, Final: %u bytes\n", current, final);
-  }
-}
-
-void onOTAEnd(bool success) {
-  // Log when OTA has finished
-  if (success) {
-    Serial.println("OTA update finished successfully!");
-  } else {
-    Serial.println("There was an error during OTA update!");
-  }
-  // <Add your own code here>
+  if(progress == 0) Serial.printf("OTA overall size bytes: %u\n", size);
+	if (millis() - ota_timestamp > 1000) {
+		ota_timestamp = millis();
+		Serial.printf("OTA Progress bytes: %u\n", progress);
+	}
 }
 
 void setup(void) {
@@ -80,7 +54,6 @@ void setup(void) {
   WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);
   Serial.println("");
-
   // Wait for connection
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
@@ -96,16 +69,9 @@ void setup(void) {
     request->send(200, "text/plain", "Hi! This is ElegantOTA AsyncDemo.");
   });
 
-  ElegantOTA.begin(&server);    // Start ElegantOTA
-  // ElegantOTA callbacks
-  ElegantOTA.onStart(onOTAStart);
-  ElegantOTA.onProgress(onOTAProgress);
-  ElegantOTA.onEnd(onOTAEnd);
-
+  ota::server_init(server, ota_progress);    // Start ElegantOTA
   server.begin();
   Serial.println("HTTP server started");
 }
 
-void loop(void) {
-  ElegantOTA.loop();
-}
+void loop(void) {}
