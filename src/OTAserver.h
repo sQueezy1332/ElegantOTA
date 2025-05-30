@@ -12,14 +12,18 @@ extern UpdaterClass Update;
 extern UpdateClass Update;
 #endif
 #ifndef OTA_FILE_PATH
-#define OTA_FILE_PATH "/ota.html.gz"
-#endif // !OTA_FILE_PATH
+#define OTA_FILE_PATH "/ota.html"
+#endif //without .gz for automatic add gzip header in AsyncFileResponse
 extern fs::SPIFFSFS SPIFFS;
 __weak_symbol extern bool auth_handler(AsyncWebServerRequest*&);
 /*bool auth_handler(AsyncWebServerRequest*& request) {
-	if (request->authenticate(_login.c_str(), _password.c_str())) return true;
-	request->requestAuthentication();
-	return false;
+	if (*_login.c_str()) {
+		if (!request->authenticate(_login.c_str(), _password.c_str())) {
+			request->requestAuthentication();
+			return false;
+		}
+	}
+	return true;
 }*/
 
 namespace ota {
