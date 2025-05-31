@@ -13,7 +13,7 @@ extern UpdateClass Update;
 #endif
 #ifndef OTA_FILE_PATH
 #define OTA_FILE_PATH "/ota.html"
-#endif //without .gz for automatic add gzip header in AsyncFileResponse
+#endif // !OTA_FILE_PATH
 extern fs::SPIFFSFS SPIFFS;
 __weak_symbol extern bool auth_handler(AsyncWebServerRequest*&);
 /*bool auth_handler(AsyncWebServerRequest*& request) {
